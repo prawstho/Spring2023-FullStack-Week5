@@ -13,7 +13,7 @@
  * 01 May 2023, PJR, File created
  *
  *************************/
-global.DEBUG = true;
+global.DEBUG = false;
 
 const fs = require("fs");
 const { initializeApp } = require('./init.js');
