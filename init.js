@@ -20,6 +20,8 @@ const fs = require('fs');
 const path = require('path');
 const fsPromise = require('fs').promises;
 
+const {folders, configjson, configtxt, inittxt, usagetxt } = require('./templates')
+
 // Add logging to the CLI project by using eventLogging
 // load the logEvents module
 const logEvents = require('./logEvents');
@@ -33,50 +35,18 @@ const myEmitter = new MyEmitter();
 // add the listener for the logEvent
 myEmitter.on('log', (event, level, msg) => logEvents(event, level, msg));
 
-const folders = ['models', 'views', 'routes', 'json', 'public'];
-const usagetxt = `
-
-myapp <command> <option>
-
-Usage:
-
-myapp --help                            displays help
-myapp init --all                        creates the folder structure and config file
-myapp init --mk                         creates the folder structure
-myapp init --cat                        creates the config file with default settings
-myapp init --help
-myapp config --show                     displays a list of the current config settings
-myapp config --reset                    resets the config file with default settings
-myapp config --set                      sets a specific config setting
-myapp config --help
-myapp token --count                     displays a count of the tokens created
-myapp token --list                      list all the usernames with tokens
-myapp token --new <username>            generates a token for a given username, saves tokens to the json file
-myapp token --upd p <username> <phone>  updates the json entry with phone number
-myapp token --upd e <username> <email>  updates the json entry with email
-myapp token --fetch <username>          fetches a user record for a given username
-myapp token --search u <username>       searches a token for a given username
-myapp token --search e <email>          searches a token for a given email
-myapp token --search p <phone>          searches a token for a given phone number
-myapp token --help
-
-`;
-
-const inittxt = `
-
-myapp <command> <option>
-
-Usage:
-
-myapp init --all                        creates the folder structure and config file
-myapp init --mk                         creates the folder structure
-myapp init --cat                        creates the config file with default settings
-myapp init --help
-
-`;
 function createFiles() {
     if(DEBUG) console.log('init.createFiles()');
-    try {      
+    try { 
+        let configdata = JSON.stringify(configjson, null, 2);
+        if(!fs.existsSync(path.join(__dirname, './json/config.json'))) {
+            fs.writeFile('./json/config.json', configdata, (err) => {
+                console.log('Data written to config file');
+                myEmitter.emit('log', 'init.createFiles()', 'INFO', 'config.json successfully created.');
+            });
+        } else {
+            myEmitter.emit('log', 'init.createFiles()', 'INFO', 'config.json already exists.'); 
+        }     
         if(!fs.existsSync(path.join(__dirname, './views/usage.txt'))) {
             fs.writeFile('./views/usage.txt', usagetxt, (err) => {
                 if(DEBUG) console.log('Data written to usage.txt file');
@@ -92,7 +62,15 @@ function createFiles() {
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/init.txt already exists.'); 
-        }     
+        }
+        if(!fs.existsSync(path.join(__dirname, './views/config.txt'))) {
+            fs.writeFile('./views/config.txt', configtxt, (err) => {
+                if(DEBUG) console.log('Data written to config.txt file');
+                myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/config.txt successfully created.');
+            });
+        } else {
+            myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/config.txt already exists.'); 
+        }  
     } catch(err) {
         console.log(err);
     }
