@@ -27,12 +27,12 @@ describe('logEvents Test Suite', () => {
     myEmitter.emit('log', 'http://localhost', 'TEST', currTimeMsg);
   });
 
-  test('Log folder exists', async () => {
+  test('logs/ folder exists', async () => {
     const folderExists = fs.existsSync(path.join(__dirname, 'logs/'));
     expect(folderExists).toBeTruthy();
   });
 
-  test('Log year folder exists', async () => {
+  test('Log year (YYYY) folder exists', async () => {
     const currFolder = 'logs/' + getYear(new Date());
     const folderExists = fs.existsSync(path.join(__dirname, currFolder));
     expect(folderExists).toBeTruthy();
