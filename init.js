@@ -36,43 +36,77 @@ const myEmitter = new MyEmitter();
 myEmitter.on('log', (event, level, msg) => logEvents(event, level, msg));
 
 function createFiles() {
+    // This function could be refactored to use a loop based upon a
+    // files array that contains all the template file names
     if(DEBUG) console.log('init.createFiles()');
+    let jsonCount = 0;
+    let txtCount = 0;
     try { 
         let configdata = JSON.stringify(configjson, null, 2);
         if(!fs.existsSync(path.join(__dirname, './json/config.json'))) {
-            fs.writeFile('./json/config.json', configdata, (err) => {
-                console.log('Data written to config file');
-                myEmitter.emit('log', 'init.createFiles()', 'INFO', 'config.json successfully created.');
+            fs.writeFileSync('./json/config.json', configdata, (err) => {
+                if(err) console.log(err);
+                else {
+                    if(DEBUG) console.log('Data written to config file');
+                    myEmitter.emit('log', 'init.createFiles()', 'INFO', 'config.json successfully created.');
+                    jsonCount++;
+                };
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', 'config.json already exists.'); 
         }     
         if(!fs.existsSync(path.join(__dirname, './views/usage.txt'))) {
-            fs.writeFile('./views/usage.txt', usagetxt, (err) => {
-                if(DEBUG) console.log('Data written to usage.txt file');
-                myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/usage.txt successfully created.');
+            fs.writeFileSync('./views/usage.txt', usagetxt, (err) => {
+                if(err) console.log(err);
+                else {
+                    if(DEBUG) console.log('Data written to usage.txt file');
+                    myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/usage.txt successfully created.');
+                    txtCount++;
+                };
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/usage.txt already exists.'); 
         }
         if(!fs.existsSync(path.join(__dirname, './views/init.txt'))) {
-            fs.writeFile('./views/init.txt', inittxt, (err) => {
-                if(DEBUG) console.log('Data written to init.txt file');
-                myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/init.txt successfully created.');
+            fs.writeFileSync('./views/init.txt', inittxt, (err) => {
+                if(err) console.log(err);
+                else {
+                    if(DEBUG) console.log('Data written to init.txt file');
+                    myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/init.txt successfully created.');
+                    txtCount++;
+                };
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/init.txt already exists.'); 
         }
         if(!fs.existsSync(path.join(__dirname, './views/config.txt'))) {
-            fs.writeFile('./views/config.txt', configtxt, (err) => {
-                if(DEBUG) console.log('Data written to config.txt file');
-                myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/config.txt successfully created.');
+            fs.writeFileSync('./views/config.txt', configtxt, (err) => {
+                if(err) console.log(err);
+                else {
+                    if(DEBUG) console.log('Data written to config.txt file');
+                    myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/config.txt successfully created.');
+                    txtCount++;
+                }
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/config.txt already exists.'); 
         }  
     } catch(err) {
         console.log(err);
+    }
+    if(jsonCount === 0) {
+        console.log('All json files already exist.');
+        myEmitter.emit('log', 'init.createFiles()', 'INFO', 'All json files already exist.');
+    } else {    
+        console.log(jsonCount + ' of ' + 1 + ' json files were created.');
+        myEmitter.emit('log', 'init.createFiles()', 'INFO', jsonCount + ' of ' + 1 + ' json files were created.');
+    }
+    if(txtCount === 0) {
+        console.log('All txt files already exist.');
+        myEmitter.emit('log', 'init.createFiles()', 'INFO', 'All txt files already exist.');
+    } else {
+        console.log(txtCount + ' of ' + 3 + ' txt files were created.');
+        myEmitter.emit('log', 'init.createFiles()', 'INFO', txtCount + ' of ' + 3 + ' txt files were created.');
     }
 };
 
@@ -137,4 +171,6 @@ function initializeApp() {
 
 module.exports = {
     initializeApp,
+    createFolders,
+    createFiles
 }
