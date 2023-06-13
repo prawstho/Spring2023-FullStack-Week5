@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const fsPromise = require('fs').promises;
 
-const {folders, configjson, configtxt, inittxt, usagetxt } = require('./templates')
+const {folders, configjson, tokenjson, tokentxt, configtxt, inittxt, usagetxt } = require('./templates')
 
 // Add logging to the CLI project by using eventLogging
 // load the logEvents module
@@ -38,6 +38,7 @@ myEmitter.on('log', (event, level, msg) => logEvents(event, level, msg));
 function createFiles() {
     // This function could be refactored to use a loop based upon a
     // files array that contains all the template file names
+    // See GitHub issue #17
     if(DEBUG) console.log('init.createFiles()');
     let jsonCount = 0;
     let txtCount = 0;
@@ -54,7 +55,16 @@ function createFiles() {
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', 'config.json already exists.'); 
-        }     
+        }
+        let tokendata = JSON.stringify(tokenjson, null, 2);
+        if(!fs.existsSync(path.join(__dirname, './json/tokens.json'))) {
+            fs.writeFile('./json/tokens.json', tokendata, (err) => {
+                if(DEBUG) console.log('Data written to token file');
+                myEmitter.emit('log', 'init.createFiles()', 'INFO', 'tokens.json successfully created.');
+            });
+        } else {
+            myEmitter.emit('log', 'init.createFiles()', 'INFO', 'token.json already exists.'); 
+        }        
         if(!fs.existsSync(path.join(__dirname, './views/usage.txt'))) {
             fs.writeFileSync('./views/usage.txt', usagetxt, (err) => {
                 if(err) console.log(err);
@@ -90,7 +100,15 @@ function createFiles() {
             });
         } else {
             myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/config.txt already exists.'); 
-        }  
+        }
+        if(!fs.existsSync(path.join(__dirname, './views/token.txt'))) {
+            fs.writeFile('./views/token.txt', tokentxt, (err) => {
+                if(DEBUG) console.log('Data written to token.txt file');
+                myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/token.txt successfully created.');
+            });
+        } else {
+            myEmitter.emit('log', 'init.createFiles()', 'INFO', './views/token.txt already exists.'); 
+        }     
     } catch(err) {
         console.log(err);
     }
